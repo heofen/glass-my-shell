@@ -14,6 +14,8 @@ const DEFAULT_PARAMS = {
     brightness_boost: 0.08,
     width: 0,
     height: 0,
+    corner_radius: 0.1,
+    smoothness: 0.02,
 };
 
 export const GlassDockEffect = utils.IS_IN_PREFERENCES ?
@@ -76,6 +78,22 @@ export const GlassDockEffect = utils.IS_IN_PREFERENCES ?
                 GObject.ParamFlags.READWRITE,
                 0.0, Number.MAX_SAFE_INTEGER,
                 0.0,
+            ),
+            'corner_radius': GObject.ParamSpec.double(
+                `corner_radius`,
+                `Corner Radius`,
+                `Rounded corner radius, normalized (0-0.5)`,
+                GObject.ParamFlags.READWRITE,
+                0.0, 0.5,
+                0.1,
+            ),
+            'smoothness': GObject.ParamSpec.double(
+                `smoothness`,
+                `Smoothness`,
+                `Edge smoothness for SDF mask`,
+                GObject.ParamFlags.READWRITE,
+                0.0, 0.1,
+                0.02,
             ),
         }
     }, class GlassDockEffect extends Clutter.ShaderEffect {
@@ -167,6 +185,23 @@ export const GlassDockEffect = utils.IS_IN_PREFERENCES ?
             if (this._height !== value) {
                 this._height = value;
                 this.set_uniform_value('height', parseFloat(this._height - 1e-6));
+            }
+        }
+
+        /* --- Corner radius --- */
+        get corner_radius() { return this._corner_radius; }
+        set corner_radius(value) {
+            if (this._corner_radius !== value) {
+                this._corner_radius = value;
+                this.set_uniform_value('u_cornerRadius', parseFloat(this._corner_radius - 1e-6));
+            }
+        }
+        /* --- Smoothness --- */
+        get smoothness() { return this._smoothness; }
+        set smoothness(value) {
+            if (this._smoothness !== value) {
+                this._smoothness = value;
+                this.set_uniform_value('u_smoothness', parseFloat(this._smoothness - 1e-6));
             }
         }
 

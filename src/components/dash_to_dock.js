@@ -159,6 +159,16 @@ class DashInfos {
             this.background.x = this.dash_background.x;
             this.background.y = this.dash_background.y + this.dash.y;
         }
+
+        // обновляем центр и размер для SDF, если эффект присутствует
+        if (this._glass_effect && this.background && this.dash_background) {
+            const centerX = (this.dash_background.x + this.dash_background.width / 2) / this.background.width;
+            const centerY = (this.dash_background.y + this.dash_background.height / 2 + this.dash.y) / this.background.height;
+            const sizeX = this.dash_background.width / this.background.width;
+            const sizeY = this.dash_background.height / this.background.height;
+            this._glass_effect.set_uniform_value('u_center', parseFloat(centerX), parseFloat(centerY));
+            this._glass_effect.set_uniform_value('u_size', parseFloat(sizeX), parseFloat(sizeY));
+        }
     }
 
     get_dash_position(dash_container, dash_background) {
@@ -203,6 +213,7 @@ export const DashBlur = class DashBlur extends Signals.EventEmitter {
         this.paint_signals = new PaintSignals(connections);
         this.is_static = this.settings.dash_to_dock.STATIC_BLUR;
         this.enabled = false;
+        this._glass_effect = null;
     }
 
     enable() {
@@ -321,8 +332,12 @@ export const DashBlur = class DashBlur extends Signals.EventEmitter {
 
             /* Добавляем наш стеклянный эффект */
             try {
-                const glassEffect = global.blur_my_shell._effects_manager.new_glass_dock_effect({});
+                const glassEffect = global.blur_my_shell._effects_manager.new_glass_dock_effect({
+                    corner_radius: this.settings.dash_to_dock.CORNER_RADIUS / (this.dash_background.height),
+                    smoothness: 0.02
+                });
                 background.add_effect(glassEffect);
+                this._glass_effect = glassEffect;
             } catch (e) {
                 this._warn(`Не удалось добавить glass_dock эффект: ${e}`);
             }
