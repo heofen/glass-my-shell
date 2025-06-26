@@ -318,6 +318,14 @@ export const DashBlur = class DashBlur extends Signals.EventEmitter {
                 background_group, 'bms-dash-blurred-widget'
             );
             bg_manager = bg_manager_list[0];
+
+            /* Добавляем наш стеклянный эффект */
+            try {
+                const glassEffect = global.blur_my_shell._effects_manager.new_glass_dock_effect({});
+                background.add_effect(glassEffect);
+            } catch (e) {
+                this._warn(`Не удалось добавить glass_dock эффект: ${e}`);
+            }
         }
         else {
             const pipeline = new DummyPipeline(

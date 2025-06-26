@@ -11,6 +11,7 @@ import { PixelizeEffect } from './pixelize.js';
 import { DerivativeEffect } from './derivative.js';
 import { RgbToHslEffect } from './rgb_to_hsl.js';
 import { HslToRgbEffect } from './hsl_to_rgb.js';
+import { GlassDockEffect } from '../effects/glass_dock.js';
 
 // We do in this way because I've not found another way to store our preferences in a dictionnary
 // while calling `gettext` on it while in preferences. Not so pretty, but works.
@@ -34,7 +35,8 @@ export function get_effects_groups(_ = _ => "") {
                 "noise",
                 "color",
                 "rgb_to_hsl",
-                "hsl_to_rgb"
+                "hsl_to_rgb",
+                "glass_dock"
             ]
         },
         shape_effects: {
@@ -332,6 +334,14 @@ export function get_supported_effects(_ = () => "") {
                     type: "boolean"
                 }
             }
+        },
+
+        glass_dock: {
+            class: GlassDockEffect,
+            name: _("Glass Dock"),
+            description: _("An effect that creates a glass dock."),
+            is_advanced: false,
+            editable_params: {}
         }
     };
 };
